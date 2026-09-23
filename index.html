@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TIME ETF 트래커</title>
+<style>
+  :root{
+    --ink:#16191d; --ink-2:#4a525c; --ink-3:#8b929b;
+    --bg:#f7f6f2; --card:#ffffff; --sub:#efede7; --line:#e3e0d7;
+    --accent:#1d4ed8; --up:#15803d; --up-soft:#e4f4ea; --down:#c2410c; --down-soft:#fbe9e1;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#eceae4; --ink-2:#b5bcc5; --ink-3:#7f8791;
+      --bg:#121417; --card:#1a1d21; --sub:#23272c; --line:#2c3137;
+      --accent:#8aa9ff; --up:#5ccf8e; --up-soft:#15301f; --down:#f29a74; --down-soft:#3a2119;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 16px 64px;display:flex;flex-direction:column;gap:24px}
+  .num{font-variant-numeric:tabular-nums}
+  header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+  h1{margin:0;font-size:1.6rem}
+  .sub{color:var(--ink-2);font-size:.9rem}
+  select,input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:7px 10px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat b{display:block;font-size:1.6rem}
+  .stat span{color:var(--ink-3);font-size:.8rem}
+  .up{color:var(--up)} .down{color:var(--down)}
+  h2{font-size:1.05rem;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .card h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;gap:8px}
+  .card h3 small{color:var(--ink-3);font-weight:400;font-size:.75rem;white-space:nowrap}
+  .meta{color:var(--ink-3);font-size:.78rem}
+  .row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:.87rem}
+  .chip{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+  .chip.buy{background:var(--up-soft);color:var(--up)}
+  .chip.sell{background:var(--down-soft);color:var(--down)}
+  .chip.plus{background:var(--up-soft);color:var(--up)}
+  .chip.minus{background:var(--down-soft);color:var(--down)}
+  .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nm small{color:var(--ink-3);margin-left:4px}
+  .val{color:var(--ink-2);font-size:.8rem;text-align:right;white-space:nowrap}
+  .more{color:var(--accent);font-size:.8rem;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 16px}
+  summary{cursor:pointer;padding:10px 0;color:var(--ink-2)}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:12px}
+  .tag{background:var(--sub);border-radius:99px;padding:4px 10px;font-size:.82rem;color:var(--ink-2)}
+  .msg{color:var(--ink-3);padding:24px 0}
+  footer{color:var(--ink-3);font-size:.78rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>TIME ETF 트래커</h1>
+      <div class="sub" id="dateLabel">불러오는 중…</div>
+    </div>
+    <div class="controls">
+      <select id="datePick" aria-label="날짜 선택"></select>
+      <input id="q" type="search" placeholder="종목·펀드 검색" aria-label="검색">
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><b class="num" id="sFunds">–</b><span>추적 펀드</span></div>
+    <div class="stat"><b class="num" id="sChanged">–</b><span>변동 있는 펀드</span></div>
+    <div class="stat"><b class="num up" id="sBuys">–</b><span>신규매수</span></div>
+    <div class="stat"><b class="num down" id="sSells">–</b><span>전량매도</span></div>
+  </div>
+
+  <section id="changed"></section>
+  <section id="unchanged"></section>
+
+  <footer>timeetf.co.kr 공시 구성종목을 평일 저녁 자동 수집해 직전 수집일과 비교합니다. 투자 판단의 근거로 쓰기 전에 원문을 확인하세요.</footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const n = v => v == null ? '' : Number(v).toLocaleString('ko-KR');
+const fmtDate = d => {
+  if (!d || d.length !== 8) return d || '';
+  const dt = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6)}T00:00:00+09:00`);
+  return `${d.slice(0,4)}.${d.slice(4,6)}.${d.slice(6)} (${'일월화수목금토'[dt.getDay()]})`;
+};
+const events = f => f.new_buys.length + f.full_sells.length + f.changed.length;
+let current = null;
+
+function row(kind, label, h, val){
+  return `<div class="row"><span class="chip ${kind}">${label}</span>
+    <span class="nm">${esc(h.name)}<small>${esc(h.code)}</small></span>
+    <span class="val num">${val}</span></div>`;
+}
+
+function card(f, q){
+  const match = h => !q || h.name.toLowerCase().includes(q) || (h.code||'').toLowerCase().includes(q);
+  const fundHit = !q || f.name.toLowerCase().includes(q);
+  const buys = f.new_buys.filter(h => fundHit || match(h));
+  const sells = f.full_sells.filter(h => fundHit || match(h));
+  const chg = f.changed.filter(h => fundHit || match(h));
+  if (!buys.length && !sells.length && !chg.length) return '';
+  const parts = [];
+  if (f.new_buys.length) parts.push(`신규 ${f.new_buys.length}`);
+  if (f.full_sells.length) parts.push(`전량매도 ${f.full_sells.length}`);
+  if (f.changed.length) parts.push(`수량변동 ${f.changed.length}`);
+  const LIMIT = 8;
+  const chgRows = chg.map((c,i) => {
+    const up = c.delta > 0;
+    const pct = c.prev_qty ? ` (${up?'+':''}${(c.delta/c.prev_qty*100).toFixed(0)}%)` : '';
+    return `<div class="${i>=LIMIT?'extra':''}" ${i>=LIMIT?'hidden':''}>${row(up?'plus':'minus', up?'증가':'감소', c,
+      `${n(c.prev_qty)} → ${n(c.qty)}${pct}`)}</div>`;
+  }).join('');
+  return `<article class="card">
+    <h3><span>${esc(f.name)}</span><small>#${f.idx}</small></h3>
+    <div class="meta">${parts.join(' · ')} · 보유 ${f.n_holdings}종목</div>
+    ${buys.map(h => row('buy','신규매수',h, `${n(h.qty)}주${h.weight!=null?` · ${h.weight}%`:''}`)).join('')}
+    ${sells.map(h => row('sell','전량매도',h, `<s>${n(h.prev_qty)}주</s>`)).join('')}
+    ${chgRows}
+    ${chg.length > LIMIT ? `<button class="more" onclick="this.parentElement.querySelectorAll('.extra').forEach(e=>e.hidden=false);this.remove()">외 ${chg.length-LIMIT}건 더 보기</button>` : ''}
+  </article>`;
+}
+
+function render(){
+  const d = current; if (!d) return;
+  const q = $('#q').value.trim().toLowerCase();
+  $('#dateLabel').textContent = `${fmtDate(d.date)} 기준` + (d.prev_date ? ` · ${fmtDate(d.prev_date)} 대비` : ' · 첫 수집일(비교 대상 없음)');
+  const changed = d.funds.filter(f => events(f) > 0).sort((a,b) => events(b) - events(a));
+  const unchanged = d.funds.filter(f => events(f) === 0);
+  $('#sFunds').textContent = d.funds.length;
+  $('#sChanged').textContent = changed.length;
+  $('#sBuys').textContent = d.funds.reduce((s,f) => s + f.new_buys.length, 0);
+  $('#sSells').textContent = d.funds.reduce((s,f) => s + f.full_sells.length, 0);
+
+  const cards = changed.map(f => card(f, q)).join('');
+  $('#changed').innerHTML = `<h2>변동 있는 펀드</h2>` + (
+    !d.prev_date ? '<div class="msg">첫 수집일이라 비교할 전일 데이터가 없습니다. 다음 영업일부터 변동이 표시됩니다.</div>'
+    : cards ? `<div class="grid">${cards}</div>`
+    : `<div class="msg">${q ? '검색 결과가 없습니다.' : '직전 수집일 대비 변동이 없습니다.'}</div>`);
+  $('#unchanged').innerHTML = unchanged.length ? `<details><summary>변동 없는 펀드 (${unchanged.length}개)</summary>
+    <div class="tags">${unchanged.map(f => `<span class="tag">${esc(f.name)}</span>`).join('')}</div></details>` : '';
+}
+
+async function load(date){
+  const url = date ? `data/diffs/${date}.json` : 'data/latest.json';
+  try {
+    const r = await fetch(url, {cache:'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    current = await r.json();
+    render();
+  } catch(e) {
+    $('#dateLabel').textContent = '';
+    $('#changed').innerHTML = '<div class="msg">아직 수집된 데이터가 없습니다. GitHub Actions에서 첫 실행을 돌려주세요.</div>';
+  }
+}
+
+(async () => {
+  try {
+    const dates = await (await fetch('data/dates.json', {cache:'no-store'})).json();
+    $('#datePick').innerHTML = dates.map(d => `<option value="${d}">${fmtDate(d)}</option>`).join('');
+  } catch(e) { $('#datePick').hidden = true; }
+  $('#datePick').onchange = e => load(e.target.value);
+  $('#q').oninput = render;
+  load();
+})();
+</script>
+</body>
+</html>
