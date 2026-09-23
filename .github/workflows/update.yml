@@ -1,0 +1,33 @@
+name: 매일 구성종목 업데이트
+
+on:
+  schedule:
+    - cron: "0 10 * * 1-5"   # 평일 한국시간 저녁 7시 (UTC 10시)
+  workflow_dispatch:          # Actions 탭에서 수동 실행 버튼
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 라이브러리 설치
+        run: pip install requests beautifulsoup4 lxml pandas
+
+      - name: 수집 및 비교
+        run: python tracker.py
+
+      - name: 결과 저장
+        run: |
+          git config user.name "etf-bot"
+          git config user.email "etf-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "구성종목 업데이트 $(TZ=Asia/Seoul date +%F)"
+          git push
