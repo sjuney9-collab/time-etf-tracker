@@ -1,0 +1,187 @@
+{
+ "date": "20260923",
+ "prev_date": null,
+ "collected_at": "2026-09-23T14:57:53+09:00",
+ "funds": [
+  {
+   "idx": 1,
+   "name": "TIME K컬처액티브",
+   "asof": "20260923",
+   "n_holdings": 25,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 2,
+   "name": "TIME 미국나스닥100액티브",
+   "asof": "20260923",
+   "n_holdings": 42,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 5,
+   "name": "TIME 미국S&P500액티브",
+   "asof": "20260923",
+   "n_holdings": 56,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 6,
+   "name": "TIME 글로벌AI인공지능액티브",
+   "asof": "20260923",
+   "n_holdings": 44,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 8,
+   "name": "TIME 글로벌소비트렌드액티브",
+   "asof": "20260923",
+   "n_holdings": 63,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 9,
+   "name": "TIME 글로벌바이오액티브",
+   "asof": "20260923",
+   "n_holdings": 33,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 10,
+   "name": "TIME 미국나스닥100채권혼합50액티브",
+   "asof": "20260923",
+   "n_holdings": 45,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 11,
+   "name": "TIME 코스피액티브",
+   "asof": "20260923",
+   "n_holdings": 40,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 12,
+   "name": "TIME Korea플러스배당액티브",
+   "asof": "20260923",
+   "n_holdings": 37,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 13,
+   "name": "TIME K바이오액티브",
+   "asof": "20260923",
+   "n_holdings": 25,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 15,
+   "name": "TIME 코리아밸류업액티브",
+   "asof": "20260923",
+   "n_holdings": 46,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 16,
+   "name": "TIME K신재생에너지액티브",
+   "asof": "20260923",
+   "n_holdings": 26,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 17,
+   "name": "TIME K이노베이션액티브",
+   "asof": "20260923",
+   "n_holdings": 15,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 19,
+   "name": "TIME 차이나AI테크액티브",
+   "asof": "20260923",
+   "n_holdings": 45,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 20,
+   "name": "TIME 글로벌우주테크&방산액티브",
+   "asof": "20260923",
+   "n_holdings": 38,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 22,
+   "name": "TIME 글로벌탑픽액티브",
+   "asof": "20260923",
+   "n_holdings": 5,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 24,
+   "name": "TIME 코스닥액티브",
+   "asof": "20260923",
+   "n_holdings": 61,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  },
+  {
+   "idx": 25,
+   "name": "TIME 글로벌휴머노이드로봇산업액티브",
+   "asof": "20260923",
+   "n_holdings": 32,
+   "new_buys": [],
+   "full_sells": [],
+   "changed": [],
+   "prev_date": null
+  }
+ ]
+}
