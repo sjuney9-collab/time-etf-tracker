@@ -4,13 +4,23 @@ on:
   schedule:
     - cron: "0 10 * * 1-5"   # 평일 한국시간 저녁 7시 (UTC 10시)
   workflow_dispatch:          # Actions 탭에서 수동 실행 버튼
+    inputs:
+      backfill:
+        description: "과거 데이터 채우기 시작일 (예: 2026-03-23). 비우면 오늘만 수집"
+        required: false
+        default: ""
 
 permissions:
   contents: write
 
+concurrency:
+  group: tracker
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -21,13 +31,18 @@ jobs:
       - name: 라이브러리 설치
         run: pip install requests beautifulsoup4 lxml pandas
 
-      - name: 수집 및 비교
-        run: python tracker.py
+      - name: 수집 및 분석
+        run: |
+          if [ -n "${{ github.event.inputs.backfill }}" ]; then
+            python tracker.py --backfill "${{ github.event.inputs.backfill }}"
+          else
+            python tracker.py
+          fi
 
       - name: 결과 저장
         run: |
           git config user.name "etf-bot"
           git config user.email "etf-bot@users.noreply.github.com"
-          git add data
+          git add -A data
           git diff --cached --quiet || git commit -m "구성종목 업데이트 $(TZ=Asia/Seoul date +%F)"
           git push
